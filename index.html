@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>幼兒認知小遊戲</title>
+    <style>
+        /* 防止 iPhone 使用者選取文字或縮放 */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #FFF9E3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+        }
+
+        h1 { color: #FF6B6B; margin-top: 20px; }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            width: 90%;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 0 #FFD93D;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            transition: transform 0.1s;
+        }
+
+        .card:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 0 #FFD93D;
+        }
+
+        .emoji { font-size: 80px; }
+        .label { font-size: 24px; font-weight: bold; margin-top: 10px; color: #4D4D4D; }
+    </style>
+</head>
+<body>
+
+    <h1>這是什麼呢？</h1>
+
+    <div class="container">
+        <div class="card" onclick="speak('蘋果')">
+            <div class="emoji">🍎</div>
+            <div class="label">蘋果</div>
+        </div>
+        <div class="card" onclick="speak('香蕉')">
+            <div class="emoji">🍌</div>
+            <div class="label">香蕉</div>
+        </div>
+        <div class="card" onclick="speak('西瓜')">
+            <div class="emoji">🍉</div>
+            <div class="label">西瓜</div>
+        </div>
+        <div class="card" onclick="speak('葡萄')">
+            <div class="emoji">🍇</div>
+            <div class="label">葡萄</div>
+        </div>
+    </div>
+
+    <script>
+        // 使用瀏覽器內建的語音合成功能，不需額外音檔
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'zh-TW';
+            utterance.rate = 0.8; // 稍微慢一點讓小朋友聽清楚
+            window.speechSynthesis.speak(utterance);
+        }
+    </script>
+</body>
+</html>
