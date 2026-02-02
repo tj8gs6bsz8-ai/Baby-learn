@@ -35,17 +35,17 @@
         }
 
         .header { text-align: center; padding: 10px 0; flex-shrink: 0; }
-        .quiz-status { font-size: clamp(24px, 7vw, 36px); font-weight: 800; color: var(--text); min-height: 1.4em; text-shadow: 2px 2px 0 white; }
+        .quiz-status { font-size: clamp(22px, 6vw, 32px); font-weight: 800; color: var(--text); min-height: 1.4em; text-shadow: 2px 2px 0 white; }
         .quiz-status.highlight { color: var(--primary); }
 
-        .controls { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; flex-shrink: 0; }
-        .mode-switch { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; }
-        .mode-btn { padding: 10px 14px; border-radius: 20px; border: 2px solid var(--primary); background: white; color: var(--primary); font-weight: bold; font-size: 15px; transition: all 0.2s; }
-        .mode-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(255,123,137,0.3); transform: translateY(-2px); }
+        .controls { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; flex-shrink: 0; }
+        .mode-switch { display: flex; justify-content: center; gap: 6px; }
+        .mode-btn { padding: 8px 12px; border-radius: 20px; border: 2px solid var(--primary); background: white; color: var(--primary); font-weight: bold; font-size: 14px; transition: all 0.2s; }
+        .mode-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(255,123,137,0.3); }
 
         .nav { display: flex; gap: 6px; justify-content: center; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
         .nav::-webkit-scrollbar { display: none; }
-        .nav-btn { white-space: nowrap; padding: 8px 16px; border: none; border-radius: 15px; background: white; box-shadow: 0 3px 0 #DDD; font-weight: bold; font-size: 16px; color: var(--text); }
+        .nav-btn { white-space: nowrap; padding: 8px 15px; border: none; border-radius: 12px; background: white; box-shadow: 0 3px 0 #DDD; font-weight: bold; font-size: 15px; color: var(--text); }
         .nav-btn.active { background: var(--accent); box-shadow: 0 3px 0 #E6B800; transform: translateY(2px); }
 
         .grid-container { flex-grow: 1; display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 12px; padding-bottom: 15px; max-width: 500px; margin: 0 auto; width: 100%; }
@@ -53,31 +53,36 @@
         .card { 
             background: white; border-radius: 28px; box-shadow: 0 8px 0 #E0E0E0; 
             display: flex; align-items: center; justify-content: center; 
-            border: 4px solid transparent; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 4px solid transparent; transition: all 0.2s;
+            position: relative;
         }
         
-        /* 數字與 Emoji 的共同顯示樣式 */
-        .emoji { 
-            font-size: 24vw; 
-            max-font-size: 120px; 
-            font-weight: 900; /* 讓純數字影子更明顯 */
-            line-height: 1; 
-            transition: filter 0.5s ease, transform 0.2s; 
-        }
-
-        /* 影子模式：完全黑色 */
+        .emoji { font-size: 22vw; max-font-size: 110px; font-weight: 900; line-height: 1; transition: filter 0.5s ease; }
         .silhouette { filter: brightness(0); }
+        .learned { filter: grayscale(100%); opacity: 0.35; pointer-events: none; box-shadow: none; background: #F5F5F5; }
 
-        /* 完成後的灰階禁用 */
-        .learned { filter: grayscale(100%); opacity: 0.35; pointer-events: none; box-shadow: none; background: #F5F5F5; border-color: transparent; }
+        /* === 新增：數量提示容器 === */
+        .quantity-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            gap: 5px;
+            width: 100%;
+            height: 100%;
+            padding: 15px;
+        }
+        .quantity-item {
+            font-size: 8vw;
+            max-font-size: 45px;
+            transition: filter 0.5s;
+        }
 
         .correct { background-color: #F0FFF4 !important; border-color: var(--success) !important; animation: pulse 0.5s ease; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         .wrong-shake { animation: shake 0.4s; border-color: var(--wrong) !important; background-color: #FFF5F5 !important; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-
+        
         #particle-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
         .star { position: absolute; font-size: 30px; animation: starFly 0.8s ease-out forwards; }
         @keyframes starFly { 0% { opacity: 1; transform: translate(0,0) scale(1); } 100% { opacity: 0; transform: translate(var(--tx), var(--ty)) rotate(180deg) scale(0); } }
@@ -107,11 +112,11 @@
     <div id="particle-layer"></div>
 
     <script>
+        const FRUITS_POOL = ['🍎', '🍌', '🍉', '🍇', '🍓', '🍊', '🍍', '🍒', '🍋', '🍑'];
         const ALL_DATA = {
-            fruits: [{n:'蘋果', i:'🍎'}, {n:'香蕉', i:'🍌'}, {n:'西瓜', i:'🍉'}, {n:'葡萄', i:'🍇'}, {n:'草莓', i:'🍓'}, {n:'橘子', i:'🍊'}, {n:'鳳梨', i:'🍍'}, {n:'櫻桃', i:'🍒'}, {n:'檸檬', i:'🍋'}, {n:'水蜜桃',i:'🍑'}, {n:'哈密瓜',i:'🍈'}, {n:'奇異果',i:'🥝'}],
-            animals: [{n:'小狗', i:'🐶'}, {n:'小貓', i:'🐱'}, {n:'大象', i:'🐘'}, {n:'兔子', i:'🐰'}, {n:'獅子', i:'🦁'}, {n:'長頸鹿', i:'🦒'}, {n:'老虎', i:'🐯'}, {n:'猴子', i:'🐵'}, {n:'小豬', i:'🐷'}, {n:'熊貓', i:'🐼'}, {n:'小雞', i:'🐤'}, {n:'乳牛', i:'🐮'}],
-            vehicles: [{n:'汽車', i:'🚗'}, {n:'飛機', i:'✈️'}, {n:'警車', i:'🚓'}, {n:'腳踏車', i:'🚲'}, {n:'火車', i:'🚂'}, {n:'船', i:'🚢'}, {n:'公車', i:'🚌'}, {n:'計程車',i:'🚕'}, {n:'消防車',i:'🚒'}, {n:'救護車',i:'🚑'}, {n:'火箭', i:'🚀'}, {n:'直升機',i:'🚁'}],
-            // 優化點：改用純數字字體，以便影子辨識
+            fruits: [{n:'蘋果', i:'🍎'}, {n:'香蕉', i:'🍌'}, {n:'西瓜', i:'🍉'}, {n:'葡萄', i:'🍇'}, {n:'草莓', i:'🍓'}, {n:'橘子', i:'🍊'}, {n:'鳳梨', i:'🍍'}, {n:'櫻桃', i:'🍒'}, {n:'檸檬', i:'🍋'}, {n:'水蜜桃',i:'🍑'}],
+            animals: [{n:'小狗', i:'🐶'}, {n:'小貓', i:'🐱'}, {n:'大象', i:'🐘'}, {n:'兔子', i:'🐰'}, {n:'獅子', i:'🦁'}, {n:'長頸鹿', i:'🦒'}, {n:'老虎', i:'🐯'}, {n:'猴子', i:'🐵'}, {n:'小豬', i:'🐷'}, {n:'熊貓', i:'🐼'}],
+            vehicles: [{n:'汽車', i:'🚗'}, {n:'飛機', i:'✈️'}, {n:'警車', i:'🚓'}, {n:'腳踏車', i:'🚲'}, {n:'火車', i:'🚂'}, {n:'船', i:'🚢'}, {n:'公車', i:'🚌'}, {n:'計程車',i:'🚕'}, {n:'消防車',i:'🚒'}, {n:'救護車',i:'🚑'}],
             numbers: [{n:'一', i:'1'}, {n:'二', i:'2'}, {n:'三', i:'3'}, {n:'四', i:'4'}, {n:'五', i:'5'}, {n:'六', i:'6'}, {n:'七', i:'7'}, {n:'八', i:'8'}, {n:'九', i:'9'}, {n:'十', i:'10'}]
         };
 
@@ -146,29 +151,33 @@
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(txt);
             u.lang = 'zh-TW';
-            u.rate = 0.8;
+            u.rate = 0.85;
             window.speechSynthesis.speak(u);
         }
 
         function pickItems() {
             let pool = [...ALL_DATA[currentCat]];
-            currentGridItems = pool.sort(() => 0.5 - Math.random()).slice(0, 6).map(item => ({...item, isDone: false}));
+            currentGridItems = pool.sort(() => 0.5 - Math.random()).slice(0, 6).map(item => {
+                // 預先為數字生成隨機水果組
+                let fruits = [];
+                if (currentCat === 'numbers') {
+                    for(let k=0; k < parseInt(item.i); k++) {
+                        fruits.push(FRUITS_POOL[Math.floor(Math.random()*FRUITS_POOL.length)]);
+                    }
+                }
+                return {...item, isDone: false, randomFruits: fruits};
+            });
             learnedCount = 0;
         }
 
         function setMode(mode) {
             currentMode = mode;
-            document.getElementById('btn-learn').classList.toggle('active', mode === 'learn');
-            document.getElementById('btn-quiz').classList.toggle('active', mode === 'quiz');
-            document.getElementById('btn-silhouette').classList.toggle('active', mode === 'silhouette');
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-${mode}`).classList.add('active');
             pickItems();
             render();
-            if (mode === 'quiz' || mode === 'silhouette') {
-                setTimeout(startNewQuestion, 500);
-            } else {
-                document.getElementById('quiz-msg').innerText = "點一點，學說話";
-                speak("學習模式");
-            }
+            if (mode !== 'learn') setTimeout(startNewQuestion, 500);
+            else { speak("學習模式"); document.getElementById('quiz-msg').innerText = "點一點，學說話"; }
         }
 
         function changeCat(cat, btn) {
@@ -177,13 +186,8 @@
             btn.classList.add('active');
             pickItems();
             render();
-            if (currentMode === 'quiz' || currentMode === 'silhouette') {
-                setTimeout(startNewQuestion, 500);
-            } else {
-                document.getElementById('quiz-msg').innerText = "點一點，學說話";
-                const catNames = {fruits:'水果', animals:'動物', vehicles:'交通工具', numbers:'數字'};
-                speak(catNames[currentCat]);
-            }
+            if (currentMode !== 'learn') setTimeout(startNewQuestion, 500);
+            else { speak(btn.innerText.replace(/[^\u4e00-\u9fa5]/g, '')); }
         }
 
         function startNewQuestion() {
@@ -201,30 +205,11 @@
                 const star = document.createElement('div');
                 star.className = 'star';
                 star.innerText = ['⭐', '✨', '🎈', '🌈', '🍭'][Math.floor(Math.random()*5)];
-                star.style.left = x + 'px';
-                star.style.top = y + 'px';
+                star.style.left = x + 'px'; star.style.top = y + 'px';
                 star.style.setProperty('--tx', `${(Math.random() - 0.5) * 300}px`);
                 star.style.setProperty('--ty', `${(Math.random() - 0.5) * 300}px`);
                 container.appendChild(star);
                 setTimeout(() => star.remove(), 800);
-            }
-        }
-
-        function finishItem(item, el) {
-            item.isDone = true;
-            learnedCount++;
-            el.classList.add('learned');
-            el.querySelector('.emoji')?.classList.remove('silhouette'); 
-            if (learnedCount >= 6) {
-                isProcessing = true;
-                setTimeout(() => playHappySound(), 300);
-                setTimeout(() => {
-                    pickItems();
-                    render();
-                    isProcessing = false;
-                    if (currentMode !== 'learn') setTimeout(startNewQuestion, 500);
-                    else document.getElementById('quiz-msg').innerText = "太棒了！換一組";
-                }, 1500);
             }
         }
 
@@ -243,10 +228,18 @@
                     const rect = el.getBoundingClientRect();
                     triggerStars(rect.left + rect.width/2, rect.top + rect.height/2);
                     
-                    if (currentMode === 'silhouette') el.querySelector('.emoji').classList.remove('silhouette');
+                    // 影子現形
+                    if (currentMode === 'silhouette') {
+                        const targets = el.querySelectorAll('.silhouette');
+                        targets.forEach(t => t.classList.remove('silhouette'));
+                    }
 
                     setTimeout(() => {
                         el.classList.remove('correct');
+                        // 數字模式在答對後顯示字形
+                        if (currentCat === 'numbers' && currentMode === 'silhouette') {
+                            el.innerHTML = `<div class="emoji">${item.i}</div>`;
+                        }
                         finishItem(item, el);
                         isProcessing = false;
                         if (learnedCount < 6) startNewQuestion();
@@ -259,6 +252,20 @@
             }
         }
 
+        function finishItem(item, el) {
+            item.isDone = true;
+            learnedCount++;
+            el.classList.add('learned');
+            if (learnedCount >= 6) {
+                setTimeout(() => playHappySound(), 300);
+                setTimeout(() => {
+                    pickItems(); render();
+                    if (currentMode !== 'learn') setTimeout(startNewQuestion, 500);
+                    else document.getElementById('quiz-msg').innerText = "太棒了！換一組";
+                }, 1500);
+            }
+        }
+
         function render() {
             const grid = document.getElementById('grid');
             grid.innerHTML = '';
@@ -266,18 +273,26 @@
                 const div = document.createElement('div');
                 div.className = 'card fade-in';
                 div.style.animationDelay = `${idx * 0.05}s`;
-                const isSil = currentMode === 'silhouette' && !item.isDone;
-                div.innerHTML = `<div class="emoji ${isSil ? 'silhouette' : ''}">${item.i}</div>`;
+                
+                // 核心邏輯：影子挑戰下的數字顯示
+                if (currentMode === 'silhouette' && currentCat === 'numbers' && !item.isDone) {
+                    let html = '<div class="quantity-container">';
+                    item.randomFruits.forEach(f => {
+                        html += `<span class="quantity-item silhouette">${f}</span>`;
+                    });
+                    html += '</div>';
+                    div.innerHTML = html;
+                } else {
+                    const isSil = currentMode === 'silhouette' && !item.isDone;
+                    div.innerHTML = `<div class="emoji ${isSil ? 'silhouette' : ''}">${item.i}</div>`;
+                }
+                
                 div.onclick = () => handleTap(item, div);
                 grid.appendChild(div);
             });
         }
 
-        window.onload = () => {
-            pickItems();
-            render();
-            document.getElementById('quiz-msg').innerText = "點一點，學說話";
-        };
+        window.onload = () => { pickItems(); render(); document.getElementById('quiz-msg').innerText = "點一點，學說話"; };
     </script>
 </body>
 </html>
