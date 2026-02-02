@@ -34,29 +34,50 @@
             overflow: hidden;
         }
 
+        /* 頂部標題與訊息 */
         .header { text-align: center; padding: 10px 0; flex-shrink: 0; }
         .quiz-status { font-size: clamp(26px, 7vw, 36px); font-weight: 800; color: var(--text); min-height: 1.4em; text-shadow: 2px 2px 0 white; }
         .quiz-status.highlight { color: var(--primary); }
 
+        /* 控制面板 */
         .controls { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; flex-shrink: 0; }
         .mode-switch { display: flex; justify-content: center; gap: 8px; }
-        .mode-btn { padding: 10px 22px; border-radius: 25px; border: 2px solid var(--primary); background: white; color: var(--primary); font-weight: bold; font-size: 18px; }
+        .mode-btn { padding: 10px 22px; border-radius: 25px; border: 2px solid var(--primary); background: white; color: var(--primary); font-weight: bold; font-size: 18px; outline: none; }
         .mode-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(255,123,137,0.3); }
 
-        .nav { display: flex; gap: 6px; justify-content: center; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+        /* 類別選單 */
+        .nav { display: flex; gap: 8px; justify-content: center; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
         .nav::-webkit-scrollbar { display: none; }
-        .nav-btn { white-space: nowrap; padding: 8px 18px; border: none; border-radius: 15px; background: white; box-shadow: 0 3px 0 #DDD; font-weight: bold; font-size: 16px; color: var(--text); }
+        .nav-btn { white-space: nowrap; padding: 10px 20px; border: none; border-radius: 15px; background: white; box-shadow: 0 3px 0 #DDD; font-weight: bold; font-size: 18px; color: var(--text); }
         .nav-btn.active { background: var(--accent); box-shadow: 0 3px 0 #E6B800; transform: translateY(2px); }
 
-        .grid-container { flex-grow: 1; display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 15px; padding-bottom: 20px; max-width: 500px; margin: 0 auto; width: 100%; }
+        /* 遊戲網格 */
+        .grid-container { 
+            flex-grow: 1; 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            grid-template-rows: repeat(3, 1fr); 
+            gap: 15px; 
+            padding-bottom: 20px; 
+            max-width: 500px; 
+            margin: 0 auto; 
+            width: 100%; 
+        }
 
+        /* 卡片樣式 */
         .card { 
-            background: white; border-radius: 28px; box-shadow: 0 8px 0 #E0E0E0; 
-            display: flex; align-items: center; justify-content: center; 
-            border: 4px solid transparent; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: white; 
+            border-radius: 28px; 
+            box-shadow: 0 8px 0 #E0E0E0; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            border: 4px solid transparent; 
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .card:active { transform: scale(0.9); }
         
+        /* 灰階與禁用狀態 */
         .card.learned {
             filter: grayscale(100%);
             opacity: 0.35;
@@ -66,16 +87,20 @@
             border-color: transparent;
         }
 
-        .emoji { font-size: 22vw; max-font-size: 110px; line-height: 1; }
+        /* 放大 Emoji */
+        .emoji { font-size: 24vw; max-font-size: 120px; line-height: 1; }
 
+        /* 動畫 */
         .correct { background-color: #F0FFF4 !important; border-color: var(--success) !important; animation: pulse 0.5s ease; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        
         .wrong-shake { animation: shake 0.4s; border-color: var(--wrong) !important; background-color: #FFF5F5 !important; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
         
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 
+        /* 特效層 */
         #particle-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
         .star { position: absolute; font-size: 30px; animation: starFly 0.8s ease-out forwards; }
         @keyframes starFly { 0% { opacity: 1; transform: translate(0,0) scale(1); } 100% { opacity: 0; transform: translate(var(--tx), var(--ty)) rotate(180deg) scale(0); } }
@@ -93,10 +118,10 @@
             <button id="btn-quiz" class="mode-btn" onclick="setMode('quiz')">考考你</button>
         </div>
         <div class="nav">
-            <button class="nav-btn active" onclick="changeCat('fruits', this)">🍎 水果</button>
-            <button class="nav-btn" onclick="changeCat('animals', this)">🐶 動物</button>
-            <button class="nav-btn" onclick="changeCat('vehicles', this)">🚗 交通</button>
-            <button class="nav-btn" onclick="changeCat('numbers', this)">🔢 數字</button>
+            <button class="nav-btn active" onclick="changeCat('fruits', this)">🍎</button>
+            <button class="nav-btn" onclick="changeCat('animals', this)">🐶</button>
+            <button class="nav-btn" onclick="changeCat('vehicles', this)">🚗</button>
+            <button class="nav-btn" onclick="changeCat('numbers', this)">🔢</button>
         </div>
     </div>
 
@@ -117,6 +142,27 @@
         let targetItem = null;
         let isProcessing = false;
         let learnedCount = 0;
+        let audioCtx = null;
+
+        // 音效產生器：輕快上升音階
+        function playHappySound() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+            const startTime = audioCtx.currentTime;
+            
+            notes.forEach((freq, i) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, startTime + i * 0.1);
+                gain.gain.setValueAtTime(0.2, startTime + i * 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.01, startTime + i * 0.1 + 0.3);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(startTime + i * 0.1);
+                osc.stop(startTime + i * 0.1 + 0.3);
+            });
+        }
 
         function speak(txt) {
             if (!window.speechSynthesis) return;
@@ -157,7 +203,8 @@
                 setTimeout(startNewQuestion, 500);
             } else {
                 document.getElementById('quiz-msg').innerText = "點一點，學說話";
-                speak(btn.innerText.replace(/[^\u4e00-\u9fa5]/g, ''));
+                const catNames = {fruits:'水果', animals:'動物', vehicles:'交通工具', numbers:'數字'};
+                speak(catNames[currentCat]);
             }
         }
 
@@ -171,14 +218,14 @@
 
         function triggerStars(x, y) {
             const container = document.getElementById('particle-layer');
-            for (let i = 0; i < 12; i++) {
+            for (let i = 0; i < 15; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
-                star.innerText = ['⭐', '✨', '🎈', '🌈'][Math.floor(Math.random()*4)];
+                star.innerText = ['⭐', '✨', '🎈', '🌈', '🍭'][Math.floor(Math.random()*5)];
                 star.style.left = x + 'px';
                 star.style.top = y + 'px';
-                star.style.setProperty('--tx', `${(Math.random() - 0.5) * 250}px`);
-                star.style.setProperty('--ty', `${(Math.random() - 0.5) * 250}px`);
+                star.style.setProperty('--tx', `${(Math.random() - 0.5) * 300}px`);
+                star.style.setProperty('--ty', `${(Math.random() - 0.5) * 300}px`);
                 container.appendChild(star);
                 setTimeout(() => star.remove(), 800);
             }
@@ -187,6 +234,9 @@
         function checkAutoRefresh() {
             if (learnedCount >= 6) {
                 isProcessing = true;
+                // 延遲播放轉場音效
+                setTimeout(() => playHappySound(), 300);
+                
                 setTimeout(() => {
                     pickItems();
                     render();
@@ -194,15 +244,17 @@
                     if (currentMode === 'quiz') {
                         setTimeout(startNewQuestion, 500);
                     } else {
-                        document.getElementById('quiz-msg').innerText = "換一組，繼續學！";
-                        speak("換一組圖片囉");
+                        document.getElementById('quiz-msg').innerText = "太棒了！換一組";
                     }
-                }, 1000);
+                }, 1200);
             }
         }
 
-        function handleTap(item, el, idx) {
+        function handleTap(item, el) {
             if (isProcessing || item.isDone) return;
+            
+            // 點擊觸發音訊權限
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
 
             if (currentMode === 'learn') {
                 speak(item.n);
@@ -233,7 +285,7 @@
                     }, 1200);
                 } else {
                     el.classList.add('wrong-shake');
-                    speak("不對喔");
+                    speak("再試一次");
                     setTimeout(() => el.classList.remove('wrong-shake'), 400);
                 }
             }
@@ -247,7 +299,7 @@
                 div.className = 'card fade-in';
                 div.style.animationDelay = `${idx * 0.05}s`;
                 div.innerHTML = `<div class="emoji">${item.i}</div>`;
-                div.onclick = () => handleTap(item, div, idx);
+                div.onclick = () => handleTap(item, div);
                 grid.appendChild(div);
             });
         }
