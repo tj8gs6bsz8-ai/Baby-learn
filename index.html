@@ -27,7 +27,7 @@
             margin: 0; 
             padding: env(safe-area-inset-top) 15px env(safe-area-inset-bottom);
             background: var(--bg); 
-            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; 
+            font-family: "PingFang TC", "Microsoft JhengHei", "Arial Black", sans-serif; 
             height: 100dvh; 
             display: flex; 
             flex-direction: column; 
@@ -35,47 +35,41 @@
         }
 
         .header { text-align: center; padding: 10px 0; flex-shrink: 0; }
-        .quiz-status { font-size: clamp(26px, 7vw, 36px); font-weight: 800; color: var(--text); min-height: 1.4em; text-shadow: 2px 2px 0 white; }
+        .quiz-status { font-size: clamp(24px, 7vw, 36px); font-weight: 800; color: var(--text); min-height: 1.4em; text-shadow: 2px 2px 0 white; }
         .quiz-status.highlight { color: var(--primary); }
 
-        /* 控制區修改：適應三個按鈕 */
-        .controls { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; flex-shrink: 0; }
-        .mode-switch { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
-        /* 按鈕稍微縮小一點字體以容納三個 */
-        .mode-btn { padding: 10px 16px; border-radius: 25px; border: 2px solid var(--primary); background: white; color: var(--primary); font-weight: bold; font-size: 16px; outline: none; transition: all 0.2s; }
+        .controls { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; flex-shrink: 0; }
+        .mode-switch { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; }
+        .mode-btn { padding: 10px 14px; border-radius: 20px; border: 2px solid var(--primary); background: white; color: var(--primary); font-weight: bold; font-size: 15px; transition: all 0.2s; }
         .mode-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(255,123,137,0.3); transform: translateY(-2px); }
 
-        .nav { display: flex; gap: 8px; justify-content: center; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+        .nav { display: flex; gap: 6px; justify-content: center; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
         .nav::-webkit-scrollbar { display: none; }
-        .nav-btn { white-space: nowrap; padding: 10px 20px; border: none; border-radius: 15px; background: white; box-shadow: 0 3px 0 #DDD; font-weight: bold; font-size: 18px; color: var(--text); }
+        .nav-btn { white-space: nowrap; padding: 8px 16px; border: none; border-radius: 15px; background: white; box-shadow: 0 3px 0 #DDD; font-weight: bold; font-size: 16px; color: var(--text); }
         .nav-btn.active { background: var(--accent); box-shadow: 0 3px 0 #E6B800; transform: translateY(2px); }
 
-        .grid-container { flex-grow: 1; display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 15px; padding-bottom: 20px; max-width: 500px; margin: 0 auto; width: 100%; }
+        .grid-container { flex-grow: 1; display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 12px; padding-bottom: 15px; max-width: 500px; margin: 0 auto; width: 100%; }
 
         .card { 
             background: white; border-radius: 28px; box-shadow: 0 8px 0 #E0E0E0; 
             display: flex; align-items: center; justify-content: center; 
             border: 4px solid transparent; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            overflow: hidden; /* 確保影子不溢出 */
         }
-        .card:active { transform: scale(0.9); }
         
-        .card.learned {
-            filter: grayscale(100%);
-            opacity: 0.35;
-            pointer-events: none;
-            box-shadow: none;
-            background: #F5F5F5;
-            border-color: transparent;
+        /* 數字與 Emoji 的共同顯示樣式 */
+        .emoji { 
+            font-size: 24vw; 
+            max-font-size: 120px; 
+            font-weight: 900; /* 讓純數字影子更明顯 */
+            line-height: 1; 
+            transition: filter 0.5s ease, transform 0.2s; 
         }
 
-        .emoji { font-size: 24vw; max-font-size: 120px; line-height: 1; transition: filter 0.5s ease; }
-        
-        /* === 新增：影子模式樣式 === */
-        /* 將 Emoji 的亮度降為 0，變成全黑剪影 */
-        .emoji.silhouette {
-            filter: brightness(0); 
-        }
+        /* 影子模式：完全黑色 */
+        .silhouette { filter: brightness(0); }
+
+        /* 完成後的灰階禁用 */
+        .learned { filter: grayscale(100%); opacity: 0.35; pointer-events: none; box-shadow: none; background: #F5F5F5; border-color: transparent; }
 
         .correct { background-color: #F0FFF4 !important; border-color: var(--success) !important; animation: pulse 0.5s ease; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
@@ -102,10 +96,10 @@
             <button id="btn-silhouette" class="mode-btn" onclick="setMode('silhouette')">這是誰</button>
         </div>
         <div class="nav">
-            <button class="nav-btn active" onclick="changeCat('fruits', this)">🍎</button>
-            <button class="nav-btn" onclick="changeCat('animals', this)">🐶</button>
-            <button class="nav-btn" onclick="changeCat('vehicles', this)">🚗</button>
-            <button class="nav-btn" onclick="changeCat('numbers', this)">🔢</button>
+            <button class="nav-btn active" onclick="changeCat('fruits', this)">🍎 水果</button>
+            <button class="nav-btn" onclick="changeCat('animals', this)">🐶 動物</button>
+            <button class="nav-btn" onclick="changeCat('vehicles', this)">🚗 交通</button>
+            <button class="nav-btn" onclick="changeCat('numbers', this)">🔢 數字</button>
         </div>
     </div>
 
@@ -117,7 +111,8 @@
             fruits: [{n:'蘋果', i:'🍎'}, {n:'香蕉', i:'🍌'}, {n:'西瓜', i:'🍉'}, {n:'葡萄', i:'🍇'}, {n:'草莓', i:'🍓'}, {n:'橘子', i:'🍊'}, {n:'鳳梨', i:'🍍'}, {n:'櫻桃', i:'🍒'}, {n:'檸檬', i:'🍋'}, {n:'水蜜桃',i:'🍑'}, {n:'哈密瓜',i:'🍈'}, {n:'奇異果',i:'🥝'}],
             animals: [{n:'小狗', i:'🐶'}, {n:'小貓', i:'🐱'}, {n:'大象', i:'🐘'}, {n:'兔子', i:'🐰'}, {n:'獅子', i:'🦁'}, {n:'長頸鹿', i:'🦒'}, {n:'老虎', i:'🐯'}, {n:'猴子', i:'🐵'}, {n:'小豬', i:'🐷'}, {n:'熊貓', i:'🐼'}, {n:'小雞', i:'🐤'}, {n:'乳牛', i:'🐮'}],
             vehicles: [{n:'汽車', i:'🚗'}, {n:'飛機', i:'✈️'}, {n:'警車', i:'🚓'}, {n:'腳踏車', i:'🚲'}, {n:'火車', i:'🚂'}, {n:'船', i:'🚢'}, {n:'公車', i:'🚌'}, {n:'計程車',i:'🚕'}, {n:'消防車',i:'🚒'}, {n:'救護車',i:'🚑'}, {n:'火箭', i:'🚀'}, {n:'直升機',i:'🚁'}],
-            numbers: [{n:'一', i:'1️⃣'}, {n:'二', i:'2️⃣'}, {n:'三', i:'3️⃣'}, {n:'四', i:'4️⃣'}, {n:'五', i:'5️⃣'}, {n:'六', i:'6️⃣'}, {n:'七', i:'7️⃣'}, {n:'八', i:'8️⃣'}, {n:'九', i:'9️⃣'}, {n:'十', i:'🔟'}]
+            // 優化點：改用純數字字體，以便影子辨識
+            numbers: [{n:'一', i:'1'}, {n:'二', i:'2'}, {n:'三', i:'3'}, {n:'四', i:'4'}, {n:'五', i:'5'}, {n:'六', i:'6'}, {n:'七', i:'7'}, {n:'八', i:'8'}, {n:'九', i:'9'}, {n:'十', i:'10'}]
         };
 
         let currentMode = 'learn';
@@ -151,7 +146,7 @@
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(txt);
             u.lang = 'zh-TW';
-            u.rate = 0.85;
+            u.rate = 0.8;
             window.speechSynthesis.speak(u);
         }
 
@@ -166,17 +161,12 @@
             document.getElementById('btn-learn').classList.toggle('active', mode === 'learn');
             document.getElementById('btn-quiz').classList.toggle('active', mode === 'quiz');
             document.getElementById('btn-silhouette').classList.toggle('active', mode === 'silhouette');
-            
             pickItems();
             render();
-
-            const msgEl = document.getElementById('quiz-msg');
             if (mode === 'quiz' || mode === 'silhouette') {
-                msgEl.classList.add('highlight');
                 setTimeout(startNewQuestion, 500);
             } else {
-                msgEl.classList.remove('highlight');
-                msgEl.innerText = "點一點，學說話";
+                document.getElementById('quiz-msg').innerText = "點一點，學說話";
                 speak("學習模式");
             }
         }
@@ -200,14 +190,9 @@
             const remaining = currentGridItems.filter(i => !i.isDone);
             if (remaining.length === 0) return;
             targetItem = remaining[Math.floor(Math.random() * remaining.length)];
-            
-            let promptText = `請找到「${targetItem.n}」`;
-            // 影子模式可以有不同的提示語，這裡暫時保持一致，重點是視覺挑戰
-            if (currentMode === 'silhouette') {
-                 promptText = `猜猜看，${targetItem.n}在哪裡？`;
-            }
-            document.getElementById('quiz-msg').innerText = promptText;
-            speak(promptText);
+            const text = currentMode === 'silhouette' ? `猜猜看，${targetItem.n}在哪裡？` : `請找到「${targetItem.n}」`;
+            document.getElementById('quiz-msg').innerText = text;
+            speak(text);
         }
 
         function triggerStars(x, y) {
@@ -225,7 +210,11 @@
             }
         }
 
-        function checkAutoRefresh() {
+        function finishItem(item, el) {
+            item.isDone = true;
+            learnedCount++;
+            el.classList.add('learned');
+            el.querySelector('.emoji')?.classList.remove('silhouette'); 
             if (learnedCount >= 6) {
                 isProcessing = true;
                 setTimeout(() => playHappySound(), 300);
@@ -233,12 +222,9 @@
                     pickItems();
                     render();
                     isProcessing = false;
-                    if (currentMode === 'quiz' || currentMode === 'silhouette') {
-                        setTimeout(startNewQuestion, 500);
-                    } else {
-                        document.getElementById('quiz-msg').innerText = "太棒了！換一組";
-                    }
-                }, 1500); // 稍微延長一點轉場時間
+                    if (currentMode !== 'learn') setTimeout(startNewQuestion, 500);
+                    else document.getElementById('quiz-msg').innerText = "太棒了！換一組";
+                }, 1500);
             }
         }
 
@@ -247,12 +233,9 @@
             if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
 
             if (currentMode === 'learn') {
-                // --- 學習模式邏輯 ---
                 speak(item.n);
                 finishItem(item, el);
-
             } else {
-                // --- 考考你 & 這是誰 邏輯 ---
                 if (item.n === targetItem.n) {
                     isProcessing = true;
                     el.classList.add('correct');
@@ -260,37 +243,20 @@
                     const rect = el.getBoundingClientRect();
                     triggerStars(rect.left + rect.width/2, rect.top + rect.height/2);
                     
-                    // 如果是影子模式，答對時先移除影子效果，讓圖片現形
-                    if (currentMode === 'silhouette') {
-                         el.querySelector('.emoji').classList.remove('silhouette');
-                    }
+                    if (currentMode === 'silhouette') el.querySelector('.emoji').classList.remove('silhouette');
 
-                    // 等待特效和現形動畫結束後，再變灰階
                     setTimeout(() => {
                         el.classList.remove('correct');
                         finishItem(item, el);
                         isProcessing = false;
-                        if (learnedCount < 6) {
-                            startNewQuestion();
-                        }
-                    }, currentMode === 'silhouette' ? 1500 : 1200); // 影子模式多給一點時間看清楚圖片
-
+                        if (learnedCount < 6) startNewQuestion();
+                    }, currentMode === 'silhouette' ? 1500 : 1000);
                 } else {
                     el.classList.add('wrong-shake');
                     speak("再試一次");
                     setTimeout(() => el.classList.remove('wrong-shake'), 400);
                 }
             }
-        }
-
-        // 共用的完成項目邏輯 (變灰階、計數、檢查刷新)
-        function finishItem(item, el) {
-            item.isDone = true;
-            learnedCount++;
-            el.classList.add('learned');
-            // 確保變灰階時，影子class被移除 (雖然在learned狀態下brightness已經沒用，但保持乾淨)
-            el.querySelector('.emoji')?.classList.remove('silhouette'); 
-            checkAutoRefresh();
         }
 
         function render() {
@@ -300,11 +266,8 @@
                 const div = document.createElement('div');
                 div.className = 'card fade-in';
                 div.style.animationDelay = `${idx * 0.05}s`;
-                
-                // 判斷是否需要加上影子 class
-                const isSilhouette = currentMode === 'silhouette' && !item.isDone;
-                div.innerHTML = `<div class="emoji ${isSilhouette ? 'silhouette' : ''}">${item.i}</div>`;
-                
+                const isSil = currentMode === 'silhouette' && !item.isDone;
+                div.innerHTML = `<div class="emoji ${isSil ? 'silhouette' : ''}">${item.i}</div>`;
                 div.onclick = () => handleTap(item, div);
                 grid.appendChild(div);
             });
