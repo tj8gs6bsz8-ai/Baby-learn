@@ -38,10 +38,12 @@
         .quiz-status { font-size: clamp(26px, 7vw, 36px); font-weight: 800; color: var(--text); min-height: 1.4em; text-shadow: 2px 2px 0 white; }
         .quiz-status.highlight { color: var(--primary); }
 
+        /* 控制區修改：適應三個按鈕 */
         .controls { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; flex-shrink: 0; }
-        .mode-switch { display: flex; justify(center); gap: 8px; }
-        .mode-btn { padding: 10px 22px; border-radius: 25px; border: 2px solid var(--primary); background: white; color: var(--primary); font-weight: bold; font-size: 18px; }
-        .mode-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(255,123,137,0.3); }
+        .mode-switch { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+        /* 按鈕稍微縮小一點字體以容納三個 */
+        .mode-btn { padding: 10px 16px; border-radius: 25px; border: 2px solid var(--primary); background: white; color: var(--primary); font-weight: bold; font-size: 16px; outline: none; transition: all 0.2s; }
+        .mode-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(255,123,137,0.3); transform: translateY(-2px); }
 
         .nav { display: flex; gap: 8px; justify-content: center; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
         .nav::-webkit-scrollbar { display: none; }
@@ -54,6 +56,7 @@
             background: white; border-radius: 28px; box-shadow: 0 8px 0 #E0E0E0; 
             display: flex; align-items: center; justify-content: center; 
             border: 4px solid transparent; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden; /* 確保影子不溢出 */
         }
         .card:active { transform: scale(0.9); }
         
@@ -66,13 +69,18 @@
             border-color: transparent;
         }
 
-        .emoji { font-size: 24vw; max-font-size: 120px; line-height: 1; }
+        .emoji { font-size: 24vw; max-font-size: 120px; line-height: 1; transition: filter 0.5s ease; }
+        
+        /* === 新增：影子模式樣式 === */
+        /* 將 Emoji 的亮度降為 0，變成全黑剪影 */
+        .emoji.silhouette {
+            filter: brightness(0); 
+        }
 
         .correct { background-color: #F0FFF4 !important; border-color: var(--success) !important; animation: pulse 0.5s ease; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         .wrong-shake { animation: shake 0.4s; border-color: var(--wrong) !important; background-color: #FFF5F5 !important; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
-        
         .fade-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 
@@ -91,6 +99,7 @@
         <div class="mode-switch">
             <button id="btn-learn" class="mode-btn active" onclick="setMode('learn')">學一學</button>
             <button id="btn-quiz" class="mode-btn" onclick="setMode('quiz')">考考你</button>
+            <button id="btn-silhouette" class="mode-btn" onclick="setMode('silhouette')">這是誰</button>
         </div>
         <div class="nav">
             <button class="nav-btn active" onclick="changeCat('fruits', this)">🍎</button>
@@ -123,13 +132,11 @@
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const notes = [523.25, 659.25, 783.99, 1046.50];
             const startTime = audioCtx.currentTime;
-            
             notes.forEach((freq, i) => {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.type = 'triangle';
                 osc.frequency.setValueAtTime(freq, startTime + i * 0.1);
-                // 音量調大：從 0.2 調升至 0.5
                 gain.gain.setValueAtTime(0.5, startTime + i * 0.1);
                 gain.gain.exponentialRampToValueAtTime(0.01, startTime + i * 0.1 + 0.3);
                 osc.connect(gain);
@@ -158,12 +165,18 @@
             currentMode = mode;
             document.getElementById('btn-learn').classList.toggle('active', mode === 'learn');
             document.getElementById('btn-quiz').classList.toggle('active', mode === 'quiz');
+            document.getElementById('btn-silhouette').classList.toggle('active', mode === 'silhouette');
+            
             pickItems();
             render();
-            if (mode === 'quiz') {
+
+            const msgEl = document.getElementById('quiz-msg');
+            if (mode === 'quiz' || mode === 'silhouette') {
+                msgEl.classList.add('highlight');
                 setTimeout(startNewQuestion, 500);
             } else {
-                document.getElementById('quiz-msg').innerText = "點一點，學說話";
+                msgEl.classList.remove('highlight');
+                msgEl.innerText = "點一點，學說話";
                 speak("學習模式");
             }
         }
@@ -174,7 +187,7 @@
             btn.classList.add('active');
             pickItems();
             render();
-            if (currentMode === 'quiz') {
+            if (currentMode === 'quiz' || currentMode === 'silhouette') {
                 setTimeout(startNewQuestion, 500);
             } else {
                 document.getElementById('quiz-msg').innerText = "點一點，學說話";
@@ -187,8 +200,14 @@
             const remaining = currentGridItems.filter(i => !i.isDone);
             if (remaining.length === 0) return;
             targetItem = remaining[Math.floor(Math.random() * remaining.length)];
-            document.getElementById('quiz-msg').innerText = `請找到「${targetItem.n}」`;
-            speak(`請找到，${targetItem.n}`);
+            
+            let promptText = `請找到「${targetItem.n}」`;
+            // 影子模式可以有不同的提示語，這裡暫時保持一致，重點是視覺挑戰
+            if (currentMode === 'silhouette') {
+                 promptText = `猜猜看，${targetItem.n}在哪裡？`;
+            }
+            document.getElementById('quiz-msg').innerText = promptText;
+            speak(promptText);
         }
 
         function triggerStars(x, y) {
@@ -214,12 +233,12 @@
                     pickItems();
                     render();
                     isProcessing = false;
-                    if (currentMode === 'quiz') {
+                    if (currentMode === 'quiz' || currentMode === 'silhouette') {
                         setTimeout(startNewQuestion, 500);
                     } else {
                         document.getElementById('quiz-msg').innerText = "太棒了！換一組";
                     }
-                }, 1200);
+                }, 1500); // 稍微延長一點轉場時間
             }
         }
 
@@ -228,36 +247,50 @@
             if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
 
             if (currentMode === 'learn') {
+                // --- 學習模式邏輯 ---
                 speak(item.n);
-                item.isDone = true;
-                learnedCount++;
-                el.classList.add('learned');
-                checkAutoRefresh();
+                finishItem(item, el);
+
             } else {
+                // --- 考考你 & 這是誰 邏輯 ---
                 if (item.n === targetItem.n) {
                     isProcessing = true;
                     el.classList.add('correct');
                     speak("好棒！");
                     const rect = el.getBoundingClientRect();
                     triggerStars(rect.left + rect.width/2, rect.top + rect.height/2);
+                    
+                    // 如果是影子模式，答對時先移除影子效果，讓圖片現形
+                    if (currentMode === 'silhouette') {
+                         el.querySelector('.emoji').classList.remove('silhouette');
+                    }
+
+                    // 等待特效和現形動畫結束後，再變灰階
                     setTimeout(() => {
                         el.classList.remove('correct');
-                        el.classList.add('learned');
-                        item.isDone = true;
-                        learnedCount++;
+                        finishItem(item, el);
                         isProcessing = false;
                         if (learnedCount < 6) {
                             startNewQuestion();
-                        } else {
-                            checkAutoRefresh();
                         }
-                    }, 1200);
+                    }, currentMode === 'silhouette' ? 1500 : 1200); // 影子模式多給一點時間看清楚圖片
+
                 } else {
                     el.classList.add('wrong-shake');
                     speak("再試一次");
                     setTimeout(() => el.classList.remove('wrong-shake'), 400);
                 }
             }
+        }
+
+        // 共用的完成項目邏輯 (變灰階、計數、檢查刷新)
+        function finishItem(item, el) {
+            item.isDone = true;
+            learnedCount++;
+            el.classList.add('learned');
+            // 確保變灰階時，影子class被移除 (雖然在learned狀態下brightness已經沒用，但保持乾淨)
+            el.querySelector('.emoji')?.classList.remove('silhouette'); 
+            checkAutoRefresh();
         }
 
         function render() {
@@ -267,7 +300,11 @@
                 const div = document.createElement('div');
                 div.className = 'card fade-in';
                 div.style.animationDelay = `${idx * 0.05}s`;
-                div.innerHTML = `<div class="emoji">${item.i}</div>`;
+                
+                // 判斷是否需要加上影子 class
+                const isSilhouette = currentMode === 'silhouette' && !item.isDone;
+                div.innerHTML = `<div class="emoji ${isSilhouette ? 'silhouette' : ''}">${item.i}</div>`;
+                
                 div.onclick = () => handleTap(item, div);
                 grid.appendChild(div);
             });
