@@ -3,31 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>寶寶認知挑戰優化版</title>
+    <title>寶寶認知挑戰 Pro+</title>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
-        :root { --bg: #FFF9E3; --primary: #FF6B6B; --success: #4CAF50; }
-        body { margin: 0; background: var(--bg); font-family: sans-serif; display: flex; flex-direction: column; align-items: center; -webkit-user-select: none; padding-top: 20px; }
-        .quiz-status { font-size: 26px; font-weight: bold; color: var(--primary); margin: 15px 0; min-height: 40px; }
-        .mode-switch { margin-bottom: 15px; }
-        .mode-btn { padding: 8px 20px; border-radius: 20px; border: 2px solid var(--primary); background: white; color: var(--primary); font-weight: bold; margin: 0 5px; }
-        .mode-btn.active { background: var(--primary); color: white; }
-        .nav { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center; }
-        .nav-btn { padding: 10px 15px; border: none; border-radius: 20px; background: white; box-shadow: 0 4px 0 #FFD93D; font-weight: bold; }
-        .nav-btn.active { background: #FFD93D; }
-        .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 90%; max-width: 400px; padding-bottom: 40px; }
-        .card { background: white; border-radius: 25px; box-shadow: 0 6px 0 #FFD93D; display: flex; flex-direction: column; align-items: center; padding: 20px; transition: 0.1s; }
-        .card:active { transform: scale(0.9); }
-        .emoji { font-size: 65px; }
-        .label { font-size: 20px; font-weight: bold; margin-top: 5px; }
-        @keyframes success-pop { 0% {transform: scale(1);} 50% {transform: scale(1.15);} 100% {transform: scale(1);} }
-        .correct { border: 5px solid var(--success); animation: success-pop 0.5s; }
+        :root { 
+            --bg: #FFF9E3; 
+            --primary: #FF6B6B; 
+            --success: #4CAF50; 
+            --wrong: #f44336;
+            --accent: #FFD93D;
+        }
+        
+        body { 
+            margin: 0; 
+            background: var(--bg); 
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            -webkit-user-select: none; 
+            padding-top: env(safe-area-inset-top); 
+            overflow-x: hidden;
+        }
+
+        /* 標題與狀態欄 */
+        .quiz-status { 
+            font-size: 28px; 
+            font-weight: bold; 
+            color: #555; 
+            margin: 20px 0; 
+            min-height: 42px; 
+            text-shadow: 1px 1px 0 white;
+            transition: color 0.3s;
+            z-index: 2;
+        }
+        .quiz-status.highlight { color: var(--primary); }
+
+        /* 模式切換 */
+        .mode-switch { margin-bottom: 20px; display: flex; gap: 10px; z-index: 2;}
+        .mode-btn { 
+            padding: 10px 25px; 
+            border-radius: 30px; 
+            border: 3px solid var(--primary); 
+            background: white; 
+            color: var(--primary); 
+            font-weight: bold; 
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .mode-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(255,107,107,0.4); }
+
+        /* 導覽列 */
+        .nav { display: flex; gap: 8px; margin-bottom: 25px; flex-wrap: wrap; justify-content: center; z-index: 2; max-width: 95%; }
+        .nav-btn { 
+            padding: 10px 14px; 
+            border: none; 
+            border-radius: 50px; 
+            background: white; 
+            box-shadow: 0 4px 0 var(--accent); 
+            font-weight: bold; 
+            font-size: 15px;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+        }
+        .nav-btn.active { background: var(--accent); transform: translateY(2px); box-shadow: 0 2px 0 #e6c435; }
+
+        /* 卡片容器 */
+        .grid-container { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 20px; 
+            width: 90%; 
+            max-width: 450px; 
+            padding-bottom: 60px; 
+            z-index: 2;
+        }
+
+        /* 卡片樣式 */
+        .card { 
+            background: white; 
+            border-radius: 30px; 
+            box-shadow: 0 8px 0 #eee; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px; 
+            aspect-ratio: 1/1; 
+            transition: transform 0.1s, box-shadow 0.1s, opacity 0.3s; 
+            border: 4px solid transparent;
+            cursor: pointer;
+            position: relative;
+        }
+        .card:active { transform: translateY(4px); box-shadow: 0 2px 0 #eee; }
+        /* 切換時的淡入效果 */
+        .card.fade-in { opacity: 0; animation: fadeIn 0.5s forwards; }
+        @keyframes fadeIn { to { opacity: 1; } }
+        
+        .emoji { font-size: 70px; margin-bottom: 10px; }
+        .label { font-size: 22px; font-weight: bold; color: #444; }
+
+        /* 動畫效果 - 答對 */
+        @keyframes success-pulse {
+            0% { transform: scale(1); border-color: var(--success); background-color: #e8f5e9; }
+            50% { transform: scale(1.05); border-color: var(--success); background-color: #c8e6c9; }
+            100% { transform: scale(1); border-color: var(--success); background-color: #e8f5e9; }
+        }
+        .correct { animation: success-pulse 0.6s infinite; border-color: var(--success) !important; z-index: 10; }
+
+        /* 動畫效果 - 答錯 */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+        .wrong-shake { animation: shake 0.4s; border-color: var(--wrong) !important; background-color: #ffebee; }
+
+        /* 星星特效 */
+        .particle-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 99;
+        }
+        .star-particle {
+            position: absolute;
+            font-size: 24px;
+            animation: fly-out 1s ease-out forwards;
+            opacity: 0;
+        }
+        @keyframes fly-out {
+            0% { opacity: 1; transform: translate(0, 0) scale(0.5) rotate(0deg); }
+            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(1.2) rotate(var(--rot)); }
+        }
     </style>
 </head>
 <body>
 
-    <div id="quiz-msg" class="quiz-status">準備好了嗎？</div>
+    <div id="quiz-msg" class="quiz-status">載入中...</div>
 
     <div class="mode-switch">
         <button id="btn-learn" class="mode-btn active" onclick="setMode('learn')">學習模式</button>
@@ -38,86 +153,196 @@
         <button class="nav-btn active" onclick="changeCat('fruits', this)">🍎 水果</button>
         <button class="nav-btn" onclick="changeCat('animals', this)">🐶 動物</button>
         <button class="nav-btn" onclick="changeCat('vehicles', this)">🚗 交通</button>
+        <button class="nav-btn" onclick="changeCat('numbers', this)">🔢 數字</button>
     </div>
 
     <div id="grid" class="grid-container"></div>
+    <div id="particle-layer" class="particle-container"></div>
 
     <script>
-        const data = {
-            fruits: [{n:'蘋果', i:'🍎'}, {n:'香蕉', i:'🍌'}, {n:'西瓜', i:'🍉'}, {n:'葡萄', i:'🍇'}, {n:'草莓', i:'🍓'}, {n:'橘子', i:'🍊'}],
-            animals: [{n:'小狗', i:'🐶'}, {n:'小貓', i:'🐱'}, {n:'大象', i:'🐘'}, {n:'兔子', i:'🐰'}, {n:'獅子', i:'🦁'}, {n:'長頸鹿', i:'🦒'}],
-            vehicles: [{n:'汽車', i:'🚗'}, {n:'飛機', i:'✈️'}, {n:'警車', i:'🚓'}, {n:'腳踏車', i:'🚲'}, {n:'火車', i:'🚂'}, {n:'船', i:'🚢'}]
+        // 擴充資料庫，讓每次隨機抽取更有變化
+        const ALL_DATA = {
+            fruits: [
+                {n:'蘋果', i:'🍎'}, {n:'香蕉', i:'🍌'}, {n:'西瓜', i:'🍉'}, 
+                {n:'葡萄', i:'🍇'}, {n:'草莓', i:'🍓'}, {n:'橘子', i:'🍊'},
+                {n:'鳳梨', i:'🍍'}, {n:'櫻桃', i:'🍒'}, {n:'檸檬', i:'🍋'},
+                {n:'水蜜桃',i:'🍑'}, {n:'哈密瓜',i:'🍈'}, {n:'奇異果',i:'🥝'}
+            ],
+            animals: [
+                {n:'小狗', i:'🐶'}, {n:'小貓', i:'🐱'}, {n:'大象', i:'🐘'}, 
+                {n:'兔子', i:'🐰'}, {n:'獅子', i:'🦁'}, {n:'長頸鹿', i:'🦒'},
+                {n:'老虎', i:'🐯'}, {n:'猴子', i:'🐵'}, {n:'小豬', i:'🐷'},
+                {n:'熊貓', i:'🐼'}, {n:'小雞', i:'🐤'}, {n:'乳牛', i:'🐮'}
+            ],
+            vehicles: [
+                {n:'汽車', i:'🚗'}, {n:'飛機', i:'✈️'}, {n:'警車', i:'🚓'}, 
+                {n:'腳踏車', i:'🚲'}, {n:'火車', i:'🚂'}, {n:'船', i:'🚢'},
+                {n:'公車', i:'🚌'}, {n:'計程車',i:'🚕'}, {n:'消防車',i:'🚒'},
+                {n:'救護車',i:'🚑'}, {n:'火箭', i:'🚀'}, {n:'直升機',i:'🚁'}
+            ],
+            // 新增數字類別
+            numbers: [
+                {n:'一', i:'1️⃣'}, {n:'二', i:'2️⃣'}, {n:'三', i:'3️⃣'},
+                {n:'四', i:'4️⃣'}, {n:'五', i:'5️⃣'}, {n:'六', i:'6️⃣'},
+                {n:'七', i:'7️⃣'}, {n:'八', i:'8️⃣'}, {n:'九', i:'9️⃣'},
+                {n:'十', i:'🔟'}, {n:'零', i:'0️⃣'}
+            ]
         };
 
         let currentMode = 'learn';
         let currentCat = 'fruits';
+        let currentGridItems = []; // 目前畫面上顯示的6個項目
         let targetItem = null;
-        let lastTarget = null;
+        let isProcessing = false;
+
+        // 語音功能
+        function speak(txt, rate = 0.75) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(txt);
+                u.lang = 'zh-TW';
+                u.rate = rate; 
+                u.pitch = 1.1; 
+                window.speechSynthesis.speak(u);
+            }
+        }
+
+        // 核心功能：從大題庫中隨機挑選 6 個不重複的項目
+        function pickRandomGridItems() {
+            // 複製一份當前類別的所有資料
+            let pool = [...ALL_DATA[currentCat]];
+            // Fisher-Yates 洗牌算法 (比 Math.random() - 0.5 更隨機)
+            for (let i = pool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pool[i], pool[j]] = [pool[j], pool[i]];
+            }
+            // 取前 6 個
+            currentGridItems = pool.slice(0, 6);
+        }
 
         function setMode(mode) {
             currentMode = mode;
+            isProcessing = false;
             document.getElementById('btn-learn').classList.toggle('active', mode === 'learn');
             document.getElementById('btn-quiz').classList.toggle('active', mode === 'quiz');
+            
+            const msgEl = document.getElementById('quiz-msg');
             if (mode === 'quiz') {
-                startNewQuestion();
+                msgEl.classList.add('highlight');
+                // 切換到挑戰模式時，重新洗牌並出題
+                pickRandomGridItems();
+                render(true); // true 代表需要淡入動畫
+                setTimeout(startNewQuestion, 500); // 稍微延遲等待卡片出現
             } else {
-                document.getElementById('quiz-msg').innerText = "點一點，學說話";
+                msgEl.classList.remove('highlight');
+                msgEl.innerText = "點一點，學說話";
+                speak("學習模式");
+                render();
             }
         }
 
         function changeCat(cat, btn) {
             currentCat = cat;
+            isProcessing = false;
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            render();
-            if (currentMode === 'quiz') startNewQuestion();
-        }
+            
+            // 切換類別時，重新洗牌
+            pickRandomGridItems();
+            render(true);
 
-        function speak(txt) {
-            window.speechSynthesis.cancel();
-            const u = new SpeechSynthesisUtterance(txt);
-            u.lang = 'zh-TW';
-            u.rate = 0.6; // 慢速
-            u.pitch = 1.1; 
-            window.speechSynthesis.speak(u);
+            if (currentMode === 'quiz') {
+                setTimeout(startNewQuestion, 500);
+            } else {
+                speak(btn.innerText.split(' ')[1]);
+                document.getElementById('quiz-msg').innerText = "點一點，學說話";
+            }
         }
 
         function startNewQuestion() {
-            const items = data[currentCat];
-            let nextTarget;
-            do {
-                nextTarget = items[Math.floor(Math.random() * items.length)];
-            } while (nextTarget === lastTarget && items.length > 1);
-            
-            targetItem = nextTarget;
-            lastTarget = targetItem;
+            if (currentGridItems.length === 0) return;
+            // 從目前的 6 個選項中挑一個當目標
+            targetItem = currentGridItems[Math.floor(Math.random() * currentGridItems.length)];
             document.getElementById('quiz-msg').innerText = `請找到「${targetItem.n}」`;
-            setTimeout(() => { speak(`請找到，${targetItem.n}`); }, 500);
+            speak(`請找到，${targetItem.n}`);
+        }
+
+        // 星星特效函數
+        function triggerStars(x, y) {
+            const container = document.getElementById('particle-layer');
+            const numStars = 12; // 星星數量
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star-particle';
+                star.innerText = '⭐';
+                star.style.left = x + 'px';
+                star.style.top = y + 'px';
+                
+                // 隨機噴射方向和旋轉角度
+                const angle = (i / numStars) * 360 + Math.random() * 30;
+                const dist = 100 + Math.random() * 80;
+                const tx = Math.cos(angle * Math.PI / 180) * dist;
+                const ty = Math.sin(angle * Math.PI / 180) * dist;
+                const rot = Math.random() * 360;
+                
+                star.style.setProperty('--tx', `${tx}px`);
+                star.style.setProperty('--ty', `${ty}px`);
+                star.style.setProperty('--rot', `${rot}deg`);
+                
+                container.appendChild(star);
+                // 動畫結束後移除元素
+                setTimeout(() => star.remove(), 1000);
+            }
         }
 
         function handleTap(item, el) {
+            if (isProcessing) return;
+
             if (currentMode === 'learn') {
                 speak(item.n);
+                el.style.transform = "scale(0.95)";
+                setTimeout(() => el.style.transform = "scale(1)", 100);
             } else {
                 if (item.n === targetItem.n) {
+                    // 答對了！
+                    isProcessing = true;
                     el.classList.add('correct');
-                    speak("答對了！你真棒");
+                    speak("答對了！你真棒", 0.8);
+                    
+                    // 取得點擊位置中心點，觸發星星
+                    const rect = el.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    triggerStars(centerX, centerY);
+
+                    // 等待動畫和語音結束後，刷新題目
                     setTimeout(() => {
                         el.classList.remove('correct');
-                        startNewQuestion();
-                    }, 2000); // 給幼兒多一點時間看正確答案
+                        isProcessing = false;
+                        // === 關鍵修改：答對後重新洗牌 ===
+                        pickRandomGridItems();
+                        render(true); // 帶動畫重新渲染
+                        setTimeout(startNewQuestion, 500);
+                    }, 1800); // 稍微延長等待時間讓星星飛完
                 } else {
+                    // 答錯了
+                    el.classList.add('wrong-shake');
                     speak("不對喔，再試試看");
+                    setTimeout(() => el.classList.remove('wrong-shake'), 500);
                 }
             }
         }
 
-        function render() {
+        // 渲染卡片 grid
+        function render(animate = false) {
             const grid = document.getElementById('grid');
             grid.innerHTML = '';
-            data[currentCat].forEach(item => {
+            // 使用 currentGridItems 而不是 ALL_DATA
+            currentGridItems.forEach((item, index) => {
                 const div = document.createElement('div');
-                div.className = 'card';
+                div.className = 'card' + (animate ? ' fade-in' : '');
+                // 讓卡片依序出現，增加動態感
+                if (animate) div.style.animationDelay = `${index * 0.05}s`; 
                 div.innerHTML = `<div class="emoji">${item.i}</div><div class="label">${item.n}</div>`;
                 div.onclick = () => handleTap(item, div);
                 grid.appendChild(div);
@@ -125,6 +350,8 @@
         }
 
         window.onload = () => {
+            // 初始化時先洗牌一次
+            pickRandomGridItems();
             render();
             document.getElementById('quiz-msg').innerText = "點一點，學說話";
         };
