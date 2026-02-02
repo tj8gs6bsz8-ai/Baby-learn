@@ -35,50 +35,51 @@
         }
 
         .header { text-align: center; padding: 10px 0; flex-shrink: 0; }
-        .quiz-status { font-size: clamp(24px, 6vw, 32px); font-weight: 800; color: var(--text); min-height: 1.4em; text-shadow: 2px 2px 0 white; margin-bottom: 5px; }
+        .quiz-status { font-size: clamp(26px, 7vw, 36px); font-weight: 800; color: var(--text); min-height: 1.4em; text-shadow: 2px 2px 0 white; }
         .quiz-status.highlight { color: var(--primary); }
 
         .controls { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; flex-shrink: 0; }
         .mode-switch { display: flex; justify-content: center; gap: 8px; }
-        .mode-btn { padding: 8px 20px; border-radius: 20px; border: 2px solid var(--primary); background: white; color: var(--primary); font-weight: bold; font-size: 16px; transition: 0.3s; }
+        .mode-btn { padding: 10px 22px; border-radius: 25px; border: 2px solid var(--primary); background: white; color: var(--primary); font-weight: bold; font-size: 18px; }
         .mode-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(255,123,137,0.3); }
 
         .nav { display: flex; gap: 6px; justify-content: center; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
         .nav::-webkit-scrollbar { display: none; }
-        .nav-btn { white-space: nowrap; padding: 8px 15px; border: none; border-radius: 15px; background: white; box-shadow: 0 3px 0 #DDD; font-weight: bold; font-size: 14px; color: var(--text); }
+        .nav-btn { white-space: nowrap; padding: 8px 18px; border: none; border-radius: 15px; background: white; box-shadow: 0 3px 0 #DDD; font-weight: bold; font-size: 16px; color: var(--text); }
         .nav-btn.active { background: var(--accent); box-shadow: 0 3px 0 #E6B800; transform: translateY(2px); }
 
-        .grid-container { flex-grow: 1; display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 12px; padding-bottom: 15px; max-width: 500px; margin: 0 auto; width: 100%; }
+        .grid-container { flex-grow: 1; display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 15px; padding-bottom: 20px; max-width: 500px; margin: 0 auto; width: 100%; }
 
         .card { 
-            background: white; border-radius: 24px; box-shadow: 0 6px 0 #E0E0E0; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            border: 4px solid transparent; transition: all 0.2s ease;
+            background: white; border-radius: 28px; box-shadow: 0 8px 0 #E0E0E0; 
+            display: flex; align-items: center; justify-content: center; 
+            border: 4px solid transparent; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .card:active { transform: scale(0.92); }
+        .card:active { transform: scale(0.9); }
         
-        /* 學習模式點過後的狀態 */
+        /* 變灰且禁用狀態 */
         .card.learned {
             filter: grayscale(100%);
-            opacity: 0.5;
-            pointer-events: none; /* 禁止點擊 */
+            opacity: 0.35;
+            pointer-events: none;
             box-shadow: none;
-            transform: none !important;
-            border-color: #EEE;
+            background: #F5F5F5;
+            border-color: transparent;
         }
 
-        .emoji { font-size: 15vw; max-font-size: 80px; margin-bottom: 5px; }
-        .label { font-size: 20px; font-weight: bold; color: #555; }
+        /* 放大 Emoji */
+        .emoji { font-size: 22vw; max-font-size: 110px; line-height: 1; }
 
         .correct { background-color: #F0FFF4 !important; border-color: var(--success) !important; animation: pulse 0.5s ease; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         .wrong-shake { animation: shake 0.4s; border-color: var(--wrong) !important; background-color: #FFF5F5 !important; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+        
         .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
 
         #particle-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; }
-        .star { position: absolute; font-size: 24px; animation: starFly 0.8s ease-out forwards; }
+        .star { position: absolute; font-size: 30px; animation: starFly 0.8s ease-out forwards; }
         @keyframes starFly { 0% { opacity: 1; transform: translate(0,0) scale(1); } 100% { opacity: 0; transform: translate(var(--tx), var(--ty)) rotate(180deg) scale(0); } }
     </style>
 </head>
@@ -108,7 +109,7 @@
         const ALL_DATA = {
             fruits: [{n:'蘋果', i:'🍎'}, {n:'香蕉', i:'🍌'}, {n:'西瓜', i:'🍉'}, {n:'葡萄', i:'🍇'}, {n:'草莓', i:'🍓'}, {n:'橘子', i:'🍊'}, {n:'鳳梨', i:'🍍'}, {n:'櫻桃', i:'🍒'}, {n:'檸檬', i:'🍋'}, {n:'水蜜桃',i:'🍑'}, {n:'哈密瓜',i:'🍈'}, {n:'奇異果',i:'🥝'}],
             animals: [{n:'小狗', i:'🐶'}, {n:'小貓', i:'🐱'}, {n:'大象', i:'🐘'}, {n:'兔子', i:'🐰'}, {n:'獅子', i:'🦁'}, {n:'長頸鹿', i:'🦒'}, {n:'老虎', i:'🐯'}, {n:'猴子', i:'🐵'}, {n:'小豬', i:'🐷'}, {n:'熊貓', i:'🐼'}, {n:'小雞', i:'🐤'}, {n:'乳牛', i:'🐮'}],
-            vehicles: [{n:'汽車', i:'🚗'}, {n:'飛機', i:'✈️'}, {n:'警車', i:'🚓'}, {n:'腳踏車', i:'🚲'}, {n:'火車', i:'🚂'}, {n:'船', i:'🚢'}, {n:'公車', i:'🚌'}, {n:'計程車',i:'🚕'}, {n:'消防車',i:'🚒'}, {n:'救護車',i:'🚑'}, {n:'火箭', i:'🚀'}, {n:'直升機',i:'🚁'}],
+            vehicles: [{n:'汽車', i:'🚗'}, {n:'飛機', i:'✈️'}, {n:'警車', i:'🚓'}, {n:'腳踏車', i:'🚲'}, {n:'火車', i:'🚂'}, {n:'船', i:'🚢'}, {n:'公車', i:'🚌'}, {n:'計程車',i:'開車'}, {n:'消防車',i:'🚒'}, {n:'救護車',i:'🚑'}, {n:'火箭', i:'🚀'}, {n:'直升機',i:'🚁'}],
             numbers: [{n:'一', i:'1️⃣'}, {n:'二', i:'2️⃣'}, {n:'三', i:'3️⃣'}, {n:'四', i:'4️⃣'}, {n:'五', i:'5️⃣'}, {n:'六', i:'6️⃣'}, {n:'七', i:'7️⃣'}, {n:'八', i:'8️⃣'}, {n:'九', i:'9️⃣'}, {n:'十', i:'🔟'}]
         };
 
@@ -117,6 +118,7 @@
         let currentGridItems = [];
         let targetItem = null;
         let isProcessing = false;
+        let learnedCount = 0;
 
         function speak(txt) {
             if (!window.speechSynthesis) return;
@@ -124,31 +126,26 @@
             const u = new SpeechSynthesisUtterance(txt);
             u.lang = 'zh-TW';
             u.rate = 0.85;
-            u.pitch = 1.1;
             window.speechSynthesis.speak(u);
         }
 
         function pickItems() {
             let pool = [...ALL_DATA[currentCat]];
-            currentGridItems = pool.sort(() => 0.5 - Math.random()).slice(0, 6);
+            currentGridItems = pool.sort(() => 0.5 - Math.random()).slice(0, 6).map(item => ({...item, isDone: false}));
+            learnedCount = 0;
         }
 
         function setMode(mode) {
             currentMode = mode;
             document.getElementById('btn-learn').classList.toggle('active', mode === 'learn');
             document.getElementById('btn-quiz').classList.toggle('active', mode === 'quiz');
-            
-            const msgEl = document.getElementById('quiz-msg');
+            pickItems();
+            render();
             if (mode === 'quiz') {
-                msgEl.classList.add('highlight');
-                pickItems();
-                render();
-                setTimeout(startNewQuestion, 400);
+                setTimeout(startNewQuestion, 500);
             } else {
-                msgEl.classList.remove('highlight');
-                msgEl.innerText = "點一點，學說話";
+                document.getElementById('quiz-msg').innerText = "點一點，學說話";
                 speak("學習模式");
-                render();
             }
         }
 
@@ -159,60 +156,83 @@
             pickItems();
             render();
             if (currentMode === 'quiz') {
-                setTimeout(startNewQuestion, 400);
+                setTimeout(startNewQuestion, 500);
             } else {
-                speak(btn.innerText.split(' ')[1]);
                 document.getElementById('quiz-msg').innerText = "點一點，學說話";
+                speak(btn.innerText.replace(/[^\u4e00-\u9fa5]/g, ''));
             }
         }
 
         function startNewQuestion() {
-            targetItem = currentGridItems[Math.floor(Math.random() * currentGridItems.length)];
+            const remaining = currentGridItems.filter(i => !i.isDone);
+            if (remaining.length === 0) return;
+            targetItem = remaining[Math.floor(Math.random() * remaining.length)];
             document.getElementById('quiz-msg').innerText = `請找到「${targetItem.n}」`;
             speak(`請找到，${targetItem.n}`);
         }
 
         function triggerStars(x, y) {
             const container = document.getElementById('particle-layer');
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 12; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
-                star.innerText = ['⭐', '✨', '🍭', '🌸'][Math.floor(Math.random()*4)];
+                star.innerText = ['⭐', '✨', '🎈', '🌈'][Math.floor(Math.random()*4)];
                 star.style.left = x + 'px';
                 star.style.top = y + 'px';
-                const tx = (Math.random() - 0.5) * 200;
-                const ty = (Math.random() - 0.5) * 200;
-                star.style.setProperty('--tx', `${tx}px`);
-                star.style.setProperty('--ty', `${ty}px`);
+                star.style.setProperty('--tx', `${(Math.random() - 0.5) * 250}px`);
+                star.style.setProperty('--ty', `${(Math.random() - 0.5) * 250}px`);
                 container.appendChild(star);
                 setTimeout(() => star.remove(), 800);
             }
         }
 
-        function handleTap(item, el) {
-            if (isProcessing) return;
+        function checkAutoRefresh() {
+            if (learnedCount >= 6) {
+                isProcessing = true;
+                setTimeout(() => {
+                    pickItems();
+                    render();
+                    isProcessing = false;
+                    if (currentMode === 'quiz') {
+                        setTimeout(startNewQuestion, 500);
+                    } else {
+                        document.getElementById('quiz-msg').innerText = "換一組，繼續學！";
+                        speak("換一組圖片囉");
+                    }
+                }, 1000);
+            }
+        }
+
+        function handleTap(item, el, idx) {
+            if (isProcessing || item.isDone) return;
 
             if (currentMode === 'learn') {
                 speak(item.n);
-                // 標記為已學習：變灰階並禁用
+                item.isDone = true;
+                learnedCount++;
                 el.classList.add('learned');
+                checkAutoRefresh();
             } else {
                 if (item.n === targetItem.n) {
                     isProcessing = true;
                     el.classList.add('correct');
-                    speak("好棒！答對了");
+                    speak("好棒！");
                     const rect = el.getBoundingClientRect();
                     triggerStars(rect.left + rect.width/2, rect.top + rect.height/2);
                     
                     setTimeout(() => {
                         el.classList.remove('correct');
-                        pickItems();
-                        render();
-                        setTimeout(() => {
-                            isProcessing = false;
+                        el.classList.add('learned');
+                        item.isDone = true;
+                        learnedCount++;
+                        isProcessing = false;
+                        
+                        if (learnedCount < 6) {
                             startNewQuestion();
-                        }, 400);
-                    }, 1500);
+                        } else {
+                            checkAutoRefresh();
+                        }
+                    }, 1200);
                 } else {
                     el.classList.add('wrong-shake');
                     speak("不對喔");
@@ -228,8 +248,8 @@
                 const div = document.createElement('div');
                 div.className = 'card fade-in';
                 div.style.animationDelay = `${idx * 0.05}s`;
-                div.innerHTML = `<div class="emoji">${item.i}</div><div class="label">${item.n}</div>`;
-                div.onclick = () => handleTap(item, div);
+                div.innerHTML = `<div class="emoji">${item.i}</div>`;
+                div.onclick = () => handleTap(item, div, idx);
                 grid.appendChild(div);
             });
         }
